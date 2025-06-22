@@ -8,25 +8,28 @@ jobs:
     test:
         runs-on: ubuntu-latest
         strategy:
-            fail-fast: true
+            fail-fast: false # Run all jobs even if one fails
             matrix:
-                # We explicitly define the test combinations instead of a cross-product.
-                # This tests each supported Laravel version against its minimum required PHP version.
+                # We explicitly define the test combinations.
+                # Each combination has a compatible set of Laravel, Testbench, and PHPUnit versions.
                 include:
                     # Test Laravel 10
                     - laravel: 10.*
-                      php: 8.2 # Minimum in this matrix (actual min is 8.1)
+                      php: 8.2
                       testbench: 8.*
+                      phpunit: 10.*
 
                     # Test Laravel 11
                     - laravel: 11.*
-                      php: 8.2 # Minimum required for Laravel 11
+                      php: 8.2
                       testbench: 9.*
+                      phpunit: 11.*
 
-                    # Test Laravel 12 (future-proofing)
+                    # Test Laravel 12
                     - laravel: 12.*
-                      php: 8.3 # Assumed minimum for Laravel 12
+                      php: 8.3
                       testbench: 10.*
+                      phpunit: 12.*
 
         name: P${{ matrix.php }} - L${{ matrix.laravel }}
 
@@ -43,8 +46,10 @@ jobs:
 
             - name: Install Composer dependencies
               run: |
-                  composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-                  composer update --prefer-stable --prefer-dist --no-interaction --no-progress
+                  # Dynamically require the correct versions for the current job matrix
+                  composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "phpunit/phpunit:${{ matrix.phpunit }}" --no-interaction --no-update --dev
+                  # The -W flag allows Composer to upgrade/downgrade dependencies to resolve conflicts
+                  composer update --prefer-stable --prefer-dist --no-interaction --no-progress --with-all-dependencies
 
             - name: Execute tests with PHPUnit
               run: vendor/bin/phpunit
