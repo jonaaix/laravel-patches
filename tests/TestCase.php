@@ -36,21 +36,6 @@ abstract class TestCase extends OrchestraTestCase
    }
 
    /**
-    * Resolve application Console Kernel implementation.
-    *
-    * @param  \Illuminate\Foundation\Application  $app
-    * @return void
-    */
-   protected function resolveApplicationConsoleKernel($app)
-   {
-      // Use our custom Kernel for all tests.
-      $app->singleton(
-         'Illuminate\Contracts\Console\Kernel',
-         'Aaix\LaravelPatches\Tests\Console\Kernel'
-      );
-   }
-
-   /**
     * Get package providers.
     */
    protected function getPackageProviders($app): array
