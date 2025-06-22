@@ -1,0 +1,55 @@
+# Workflow name
+name: Run Tests
+
+# Triggers the workflow on push or pull request events
+on: [push, pull_request]
+
+jobs:
+    test:
+        # The type of runner that the job will run on
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                # Test against multiple PHP versions
+                php: [8.2, 8.3, 8.4]
+                # Test against multiple Laravel versions
+                laravel: [10.*, 11.*, 12.*]
+                include:
+                    - laravel: 12.*
+                      testbench: 10.*
+                    - laravel: 11.*
+                      testbench: 9.*
+                    - laravel: 10.*
+                      testbench: 8.*
+                exclude:
+                    # Exclude incompatible combinations
+                    - laravel: 12.*
+                      php: 8.2 # Laravel 12 will likely require PHP 8.3+
+                    - laravel: 11.*
+                      php: 8.1 # Laravel 11 requires PHP 8.2+
+                    - laravel: 10.*
+                      php: 8.4 # Laravel 10 will not support PHP 8.4
+                    - laravel: 11.*
+                      php: 8.4 # Laravel 11 will not support PHP 8.4
+
+        name: P${{ matrix.php }} - L${{ matrix.laravel }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
+                  coverage: none
+
+            - name: Install Composer dependencies
+              run: |
+                  composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                  composer update --prefer-stable --prefer-dist --no-interaction --no-progress
+
+            - name: Execute tests with PHPUnit
+              run: vendor/bin/phpunit

@@ -1,0 +1,38 @@
+<?php
+
+namespace {{ namespace }};
+
+use Aaix\LaravelPatches\Commands\PatchCommand;
+
+class {{ class }} extends PatchCommand
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = '{{ signature }}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = '{{ description }}';
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle(): int
+    {
+        $this->info('Running patch: {{ class }}');
+
+        // Your patch logic goes here...
+
+        $this->info('Patch execution finished.');
+
+        return self::SUCCESS;
+    }
+}
