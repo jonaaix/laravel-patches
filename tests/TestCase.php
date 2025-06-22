@@ -14,35 +14,38 @@ abstract class TestCase extends OrchestraTestCase
    protected function setUp(): void
    {
       parent::setUp();
-
-      // Prepare a test patch from a fixture for execution tests.
-      $this->setupTestPatch();
    }
 
    /**
-    * Copies a fixture patch into the test application's command directory
-    * so it can be discovered by our custom test Kernel.
+    * Copies a fixture patch into the test application's command directory.
     */
    protected function setupTestPatch(): void
    {
       $fixturePath = __DIR__ . '/fixtures/MyTestPatch.php';
       $destinationPath = app_path('Console/Patches');
+      $destinationFile = $destinationPath . '/MyTestPatch.php';
 
       if (!File::isDirectory($destinationPath)) {
          File::makeDirectory($destinationPath, 0755, true);
       }
 
       File::copy($fixturePath, $destinationPath . '/MyTestPatch.php');
+
+      // Manually load the class file so PHP knows about it,
+      // bypassing the autoloader issue.
+      require_once $destinationFile;
    }
 
    /**
     * Get package providers.
+    *
+    * @param  \Illuminate\Foundation\Application $app
+    * @return array
     */
    protected function getPackageProviders($app): array
    {
-      return [
-         PatchServiceProvider::class,
-      ];
+      // We only return the provider class here. The setup happens elsewhere.
+      return [PatchServiceProvider::class];
    }
 
    /**
@@ -53,15 +56,18 @@ abstract class TestCase extends OrchestraTestCase
     */
    protected function getEnvironmentSetUp($app): void
    {
-      // Set up the in-memory SQLite database.
+      // 1. Set up the test patch file now that core services are available.
+      $this->setupTestPatch();
+
+      // 2. Set up the in-memory SQLite database.
       $app['config']->set('database.default', 'testing');
       $app['config']->set('database.connections.testing', [
-         'driver'   => 'sqlite',
+         'driver' => 'sqlite',
          'database' => ':memory:',
-         'prefix'   => '',
+         'prefix' => '',
       ]);
 
-      // Set the default patch path to the test app's directory.
+      // 3. Set the default patch path for our provider to find the test patch.
       $app['config']->set('patches.path', 'app/Console/Patches');
    }
 }

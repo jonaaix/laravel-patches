@@ -25,7 +25,6 @@ class StatusCommand extends Command
 
    public function handle(): int
    {
-
       // Use the dedicated service to validate the schema.
       if (!(new SchemaValidator())->validate($this)) {
          return self::FAILURE;
@@ -89,12 +88,10 @@ class StatusCommand extends Command
       }
 
       // Split on / or \, studly-case each segment, rejoin with backslashes
-      $segments = collect(preg_split('/[\/\\\\]+/', $normalized))
-         ->map(fn($seg) => Str::studly($seg))
-         ->filter()
-         ->implode('\\');
+      $segments = collect(preg_split('/[\/\\\\]+/', $normalized))->map(fn($seg) => Str::studly($seg))->filter()->implode('\\');
 
-      return trim($appNamespace . $segments, '\\');
+      // This is the line to fix:
+      return empty($segments) ? $appNamespace : trim($appNamespace . '\\' . $segments, '\\');
    }
 
    protected function displayPatches(string $title, Collection $patches): void

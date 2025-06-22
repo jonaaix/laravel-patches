@@ -18,7 +18,7 @@ class PatchCommandsTest extends TestCase
    {
       // Arrange
       $patchName = 'MyNewGeneratedPatch';
-      $patchFileName = "Patch_" . now()->format('Y_m_d') . "_{$patchName}.php";
+      $patchFileName = 'Patch_' . now()->format('Y_m_d') . "_{$patchName}.php";
       $patchPath = app_path("Console/Patches/{$patchFileName}");
 
       // Act
@@ -33,55 +33,57 @@ class PatchCommandsTest extends TestCase
       File::delete($patchPath);
    }
 
-   // #[Test]
-   // public function status_command_shows_pending_patches_correctly(): void
-   // {
-   //    // The fixture 'MyTestPatch.php' is automatically loaded by our custom Kernel.
-   //    // The RefreshDatabase trait runs the necessary migrations.
-   //
-   //    $this->artisan('patch:status')
-   //       ->expectsOutputToContain('❌ Pending Patches')
-   //       ->expectsOutputToContain('MyTestPatch')
-   //       ->assertSuccessful();
-   // }
+   #[Test]
+   public function status_command_shows_pending_patches_correctly(): void
+   {
+      // The fixture 'MyTestPatch.php' is automatically loaded by our custom Kernel.
+      // The RefreshDatabase trait runs the necessary migrations.
 
-   // #[Test]
-   // public function a_patch_can_be_executed_successfully_and_is_logged(): void
-   // {
-   //    // Act
-   //    $this->artisan('patch:my-test-patch')->assertSuccessful();
-   //
-   //    // Assert
-   //    $this->assertDatabaseHas('patch_logs', [
-   //       'patch_class' => 'App\\Console\\Patches\\MyTestPatch'
-   //    ]);
-   //
-   //    $this->assertDatabaseHas('migrations', [
-   //       'migration' => 'my-test-patch-was-here'
-   //    ]);
-   //
-   //    $this->artisan('patch:status')
-   //       ->expectsOutputToContain('✅ Ran Patches')
-   //       ->expectsOutputToContain('MyTestPatch')
-   //       ->doesntExpectOutputToContain('❌ Pending Patches')
-   //       ->assertSuccessful();
-   // }
+      $this->artisan('patch:status')
+         ->expectsOutputToContain('❌ Pending Patches')
+         ->expectsOutputToContain('MyTestPatch')
+         ->assertSuccessful();
+   }
 
-   // #[Test]
-   // public function a_ran_patch_is_not_executed_twice(): void
-   // {
-   //    // Act
-   //    $this->artisan('patch:my-test-patch')->assertSuccessful();
-   //    $this->assertCount(1, DB::table('patch_logs')->get());
-   //
-   //    // Act
-   //    $this->artisan('patch:my-test-patch')
-   //       ->expectsOutputToContain('has already been applied and will be skipped')
-   //       ->assertSuccessful();
-   //
-   //    // Assert
-   //    $this->assertCount(1, DB::table('patch_logs')->get());
-   // }
+   #[Test]
+   public function a_patch_can_be_executed_successfully_and_is_logged(): void
+   {
+      // 1. Act
+      $this->artisan('patch:my-test-patch')->expectsOutputToContain('Successfully ran and logged')->assertSuccessful();
+
+      // 2. Assert database state is correct
+      $this->assertDatabaseHas('migrations', [
+         'migration' => 'my-test-patch-was-here',
+      ]);
+
+      $this->assertDatabaseHas('patch_logs', [
+         'patch_class' => 'App\\Console\\Patches\\MyTestPatch',
+      ]);
+
+      // 3. Assert the final status command output is correct
+      $this->artisan('patch:status')
+         ->expectsOutputToContain('✅ Ran Patches')
+         ->expectsOutputToContain('MyTestPatch') // The patch appears in the "Ran" list
+         ->expectsOutputToContain('❌ Pending Patches') // The "Pending" header is always shown
+         ->expectsOutputToContain('None') // The key: "None" should be listed under "Pending"
+         ->assertSuccessful();
+   }
+
+   #[Test]
+   public function a_ran_patch_is_not_executed_twice(): void
+   {
+      // Act
+      $this->artisan('patch:my-test-patch')->assertSuccessful();
+      $this->assertCount(1, DB::table('patch_logs')->get());
+
+      // Act
+      $this->artisan('patch:my-test-patch')
+         ->expectsOutputToContain('has already been applied and will be skipped')
+         ->assertSuccessful();
+
+      // Assert
+      $this->assertCount(1, DB::table('patch_logs')->get());
+   }
 
    #[Test]
    public function it_fails_gracefully_if_migrations_have_not_been_run(): void
@@ -90,8 +92,6 @@ class PatchCommandsTest extends TestCase
       Schema::dropIfExists(config('patches.table', 'patch_logs'));
 
       // Act & Assert
-      $this->artisan('patch:status')
-         ->expectsOutputToContain("The patch log table 'patch_logs' does not exist.")
-         ->assertFailed();
+      $this->artisan('patch:status')->expectsOutputToContain("The patch log table 'patch_logs' does not exist.")->assertFailed();
    }
 }
