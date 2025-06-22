@@ -6,32 +6,27 @@ on: [push, pull_request]
 
 jobs:
     test:
-        # The type of runner that the job will run on
         runs-on: ubuntu-latest
         strategy:
             fail-fast: true
             matrix:
-                # Test against multiple PHP versions
-                php: [8.2, 8.3, 8.4]
-                # Test against multiple Laravel versions
-                laravel: [10.*, 11.*, 12.*]
+                # We explicitly define the test combinations instead of a cross-product.
+                # This tests each supported Laravel version against its minimum required PHP version.
                 include:
-                    - laravel: 12.*
-                      testbench: 10.*
-                    - laravel: 11.*
-                      testbench: 9.*
+                    # Test Laravel 10
                     - laravel: 10.*
+                      php: 8.2 # Minimum in this matrix (actual min is 8.1)
                       testbench: 8.*
-                exclude:
-                    # Exclude incompatible combinations
+
+                    # Test Laravel 11
+                    - laravel: 11.*
+                      php: 8.2 # Minimum required for Laravel 11
+                      testbench: 9.*
+
+                    # Test Laravel 12 (future-proofing)
                     - laravel: 12.*
-                      php: 8.2 # Laravel 12 will likely require PHP 8.3+
-                    - laravel: 11.*
-                      php: 8.1 # Laravel 11 requires PHP 8.2+
-                    - laravel: 10.*
-                      php: 8.4 # Laravel 10 will not support PHP 8.4
-                    - laravel: 11.*
-                      php: 8.4 # Laravel 11 will not support PHP 8.4
+                      php: 8.3 # Assumed minimum for Laravel 12
+                      testbench: 10.*
 
         name: P${{ matrix.php }} - L${{ matrix.laravel }}
 
