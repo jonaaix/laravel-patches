@@ -31,3 +31,4 @@ rr
 indexing-api-*.json
 supervisord.log
 compose.yaml
+.phpunit.cache/
