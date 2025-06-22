@@ -43,7 +43,7 @@ abstract class TestCase extends OrchestraTestCase
     */
    protected function resolveApplicationConsoleKernel($app)
    {
-      // Use our custom Kernel for all tests. This is the key to solving the issue.
+      // Use our custom Kernel for all tests.
       $app->singleton(
          'Illuminate\Contracts\Console\Kernel',
          'Aaix\LaravelPatches\Tests\Console\Kernel'
@@ -62,6 +62,9 @@ abstract class TestCase extends OrchestraTestCase
 
    /**
     * Define environment setup.
+    *
+    * @param  \Illuminate\Foundation\Application  $app
+    * @return void
     */
    protected function getEnvironmentSetUp($app): void
    {
