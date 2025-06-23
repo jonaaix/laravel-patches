@@ -1,6 +1,10 @@
 # .github/workflows/release.yml
 name: Create New Release
 
+# grant write permission on repo contents so we can create a release
+permissions:
+    contents: write
+
 on:
     push:
         tags:
