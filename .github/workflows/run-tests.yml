@@ -1,8 +1,10 @@
-# Workflow name
+# .github/workflows/run-tests.yml
 name: Run Tests
 
-# Triggers the workflow on push or pull request events
-on: [ push, pull_request ]
+on:
+    push: { }            # trigger on any push (branches & tags)
+    pull_request: { }    # trigger on any pull request
+    workflow_call: { }   # allow other workflows to call this one
 
 jobs:
     test:
@@ -46,10 +48,13 @@ jobs:
 
             -   name: Install Composer dependencies
                 run: |
-                    # Dynamically require the correct versions for the current job matrix
-                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "phpunit/phpunit:${{ matrix.phpunit }}" --no-interaction --no-update --dev
-                    # The -W flag allows Composer to upgrade/downgrade dependencies to resolve conflicts
+                    # Require framework, testbench, and phpunit versions for this matrix
+                    composer require "laravel/framework:${{ matrix.laravel }}" \
+                      "orchestra/testbench:${{ matrix.testbench }}" \
+                      "phpunit/phpunit:${{ matrix.phpunit }}" \
+                      --no-interaction --no-update --dev
+                    # Update dependencies to resolve any conflicts
                     composer update --prefer-stable --prefer-dist --no-interaction --no-progress --with-all-dependencies
 
-            -   name: Execute tests with PHPUnit
+            -   name: Execute PHPUnit tests
                 run: vendor/bin/phpunit
