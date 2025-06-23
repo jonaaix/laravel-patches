@@ -1,5 +1,10 @@
 # 🛠️ Laravel Patch Commands
 
+[![Run Tests](https://github.com/jonaaix/laravel-patches/actions/workflows/run-tests.yml/badge.svg)](https://github.com/aaix/laravel-patches/actions/workflows/run-tests.yml)
+[![Latest Stable Version](https://img.shields.io/packagist/v/aaix/laravel-patches.svg)](https://packagist.org/packages/aaix/laravel-patches)
+[![Total Downloads](https://img.shields.io/packagist/dt/aaix/laravel-patches.svg)](https://packagist.org/packages/aaix/laravel-patches)
+
+
 A simple, command-based patching system for Laravel. Patches are designed to be hidden, trackable, and disposable one-off commands, ideal for data migrations, one-time fixes, or complex deployments.
 
 ---
