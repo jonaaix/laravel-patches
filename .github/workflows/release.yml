@@ -2,39 +2,26 @@
 name: Create New Release
 
 on:
-    workflow_run:
-        workflows:
-            - Run Tests
-        types:
-            - completed
+    push:
+        tags:
+            - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
+    test:
+        uses: ./.github/workflows/run-tests.yml
+
     release:
-        if: >
-            github.event.workflow_run.conclusion == 'success' &&
-            startsWith(github.event.workflow_run.head_branch, 'v')  # only tags like v1.2.3
+        name: Create GitHub Release
+        needs: test
         runs-on: ubuntu-latest
         steps:
-            -   name: Checkout tag commit
-                uses: actions/checkout@v4
-                with:
-                    ref: ${{ github.event.workflow_run.head_sha }}
-
-            -   name: Verify tag is on main branch
-                run: |
-                    git fetch origin main
-                    if ! git merge-base --is-ancestor ${{ github.event.workflow_run.head_sha }} origin/main; then
-                      echo "Tag commit is not on main branch"
-                      exit 1
-                    fi
-
             -   name: Create GitHub Release
                 uses: actions/create-release@v1
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 with:
-                    tag_name: ${{ github.event.workflow_run.head_branch }}
-                    release_name: Release ${{ github.event.workflow_run.head_branch }}
+                    tag_name: ${{ github.ref }}
+                    release_name: Release ${{ github.ref_name }}
                     body: |
                         New release of the Laravel Patches package. Please see the commit history for changes.
                     draft: false
