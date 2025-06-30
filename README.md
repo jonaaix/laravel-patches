@@ -51,14 +51,14 @@ you run php artisan migrate.
 
 ### 1️⃣ Create a Patch
 
-Use the provided `make:patch` command to create a new patch class. The file will be placed in the `app/Console/Patches` directory
-by default.
+Use the provided `make:patch` command to create a new patch class. The file will be placed in the `app/Console/Commands/Patches`
+directory by default.
 
 ```bash
 php artisan make:patch FixUserEmails
 ```
 
-This will generate a file like `app/Console/Patches/Patch_2025_06_22_FixUserEmails.php`.
+This will generate a file like `app/Console/Commands/Patches/Patch_2025_06_30_FixUserEmails.php`.
 
 ---
 
@@ -67,7 +67,7 @@ This will generate a file like `app/Console/Patches/Patch_2025_06_22_FixUserEmai
 Open the newly created file and add your logic to the `handle()` method.
 
 ```php
-// app/Console/Patches/Patch_2025_06_22_FixUserEmails.php
+// app/Console/Commands/Patches/Patch_2025_06_30_FixUserEmails.php
 
 public function handle(): int
 {
@@ -84,21 +84,54 @@ public function handle(): int
 
 ---
 
-### 3️⃣ Run a Patch
+### 3️⃣ Run Patches
 
-Execute the patch from your terminal using its unique signature.
+**A) Interactively (Recommended)**
+
+Run the main `patch` command to get an interactive list of all pending patches. You can select one or multiple patches to run.
 
 ```bash
-php artisan patch:2025_06_22_fix-user-emails
+php artisan patch
 ```
 
-The system will run the patch and log its execution. If you try to run the same command again, it will be skipped.
+This will present a prompt like this:
+
+```bash
+? Which (pending) patches would you like to run?
+  [ ] Patch_2025_06_30_FixUserEmails.php
+  [ ] Patch_2025_07_01_AnotherFix.php
+```
+
+**B) Run a Specific Patch by Signature**
+If you know the exact signature of a patch, you can run it directly. The signature is generated automatically when you create the
+patch.
+
+```bash
+php artisan patch:2025_06_30_fix-user-emails
+```
+
+The system will run the patch and log its execution. If you try to run the same command again, you will be asked for confirmation.
+
+**C) Non-Interactively (for deployments)**
+You can run patches non-interactively using the `--all` or `--patch` flags.
+
+- Run a specific patch by name:
+   ```bash
+   php artisan patch --patch=Patch_2025_06_30_FixUserEmails
+   ```
+- Run all pending patches:
+   ```bash
+  php artisan patch --all
+   ```
+  ⚠️ Warning: The --all flag should be used with extreme caution. Patches are designed for controlled, deliberate execution.
+  Running all pending patches at once, especially in a production environment, can lead to unintended consequences if the order or
+  combination of patches has not been thoroughly tested. It is highly recommended to run patches individually or in tested groups.
 
 ---
 
 ### 4️⃣ Check Patch Status
 
-To see which patches have been run and which are pending, use the `patch:status` command.
+To see which patches have been run and which are pending, use the patch:status command.
 
 ```bash
 php artisan patch:status
@@ -108,18 +141,18 @@ This will display two clear, sorted lists:
 
 ```
 ✅ Ran Patches
-+------------------------------------------------+
-| Patch                                          |
-+------------------------------------------------+
-| Patch_2025_06_20_SomeOldPatch.php              |
-+------------------------------------------------+
++------------------------------------------+
+| Patch Name                               |
++------------------------------------------+
+| Patch_2025_06_20_SomeOldPatch.php        |
++------------------------------------------+
 
 ❌ Pending Patches
-+------------------------------------------------+
-| Patch                                          |
-+------------------------------------------------+
-| Patch_2025_06_22_FixUserEmails.php             |
-+------------------------------------------------+
++------------------------------------------+
+| Patch Name                               |
++------------------------------------------+
+| Patch_2025_06_30_FixUserEmails.php       |
++------------------------------------------+
 ```
 
 Patches that have been run and then deleted from the filesystem will not be shown, as they are considered irrelevant.
