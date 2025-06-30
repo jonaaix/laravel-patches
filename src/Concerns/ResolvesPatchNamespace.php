@@ -8,7 +8,7 @@ trait ResolvesPatchNamespace
 {
    protected function getNamespaceForPath(string $path): string
    {
-      $appNamespace = $this->laravel->getNamespace();
+      $appNamespace = $this->getLaravel()->getNamespace();
 
       $path = ltrim(str_replace('app', '', $path), '/');
       $relativeNamespace = str_replace('/', '\\', Str::studly($path));
