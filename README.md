@@ -159,6 +159,18 @@ Patches that have been run and then deleted from the filesystem will not be show
 
 ---
 
+### 5️⃣ Syncing Existing Patches
+
+If you are integrating this package into a project that already has numerous patch files, you might want to log them in the database without re-running their code. The `patch:sync` command allows you to do this.
+
+It will find all patch files that are not in the `patch_logs` table and let you interactively select which ones to mark as "run".
+
+```bash
+php artisan patch:sync
+```
+
+---
+
 ## ⚙️ Configuration
 
 If you need to customize the package, you can publish the configuration file and find it at `config/patches.php`.

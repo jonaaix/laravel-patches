@@ -4,6 +4,7 @@ namespace Aaix\LaravelPatches;
 use Aaix\LaravelPatches\Commands\MakePatchCommand;
 use Aaix\LaravelPatches\Commands\RunPatchesCommand;
 use Aaix\LaravelPatches\Commands\StatusCommand;
+use Aaix\LaravelPatches\Commands\SyncCommand;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 
@@ -18,6 +19,7 @@ class PatchServiceProvider extends ServiceProvider
             MakePatchCommand::class,
             StatusCommand::class,
             RunPatchesCommand::class,
+            SyncCommand::class
          ]);
 
          $this->registerPatchCommands();
