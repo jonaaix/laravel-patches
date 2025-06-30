@@ -2,6 +2,7 @@
 
 namespace Aaix\LaravelPatches\Commands;
 
+use Aaix\LaravelPatches\Concerns\ResolvesPatchNamespace;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
@@ -12,6 +13,8 @@ use function Laravel\Prompts\select;
 
 class StatusCommand extends Command
 {
+   use ResolvesPatchNamespace;
+
    protected $signature = 'patch:status';
    protected $description = 'Show the status of all patches';
 
@@ -77,22 +80,6 @@ class StatusCommand extends Command
       });
    }
 
-   protected function getNamespaceForPath(string $path): string
-   {
-      $appNamespace = $this->laravel->getNamespace();
-
-      // Strip leading slashes or “app” prefix
-      $normalized = ltrim($path, '/\\');
-      if (Str::startsWith(strtolower($normalized), 'app')) {
-         $normalized = ltrim(substr($normalized, strlen('app')), '/\\');
-      }
-
-      // Split on / or \, studly-case each segment, rejoin with backslashes
-      $segments = collect(preg_split('/[\/\\\\]+/', $normalized))->map(fn($seg) => Str::studly($seg))->filter()->implode('\\');
-
-      // This is the line to fix:
-      return empty($segments) ? $appNamespace : trim($appNamespace . '\\' . $segments, '\\');
-   }
 
    protected function displayPatches(string $title, Collection $patches): void
    {

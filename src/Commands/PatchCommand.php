@@ -24,7 +24,6 @@ abstract class PatchCommand extends Command
     */
    protected function execute(InputInterface $input, OutputInterface $output): int
    {
-      // Use the dedicated service to validate the schema.
       if (!(new SchemaValidator())->validate($this)) {
          return self::FAILURE;
       }
@@ -32,18 +31,31 @@ abstract class PatchCommand extends Command
       $tableName = config('patches.table', 'patch_logs');
       $patchClass = static::class;
 
-      if (DB::table($tableName)->where('patch_class', $patchClass)->exists()) {
-         $this->warn("Patch <info>{$patchClass}</info> has already been applied and will be skipped.");
-         return self::SUCCESS;
+      $existing = DB::table($tableName)->where('patch_class', $patchClass)->first();
+
+      if ($existing) {
+         if ($this->confirm("Patch <info>{$patchClass}</info> has already been applied {$existing->run_count} time(s). Do you want to run it again?")) {
+            $this->info("Re-running patch <info>{$patchClass}</info>...");
+         } else {
+            $this->warn("Skipping patch <info>{$patchClass}</info>.");
+            return self::SUCCESS;
+         }
       }
 
-      // Call the parent execute method which runs the handle() method.
-      // Note: We are overriding execute method from a parent that uses Symfony interfaces.
-      // It's better to stick to the parent's signature for compatibility.
       $status = parent::execute($input, $output);
 
       if ($status === self::SUCCESS) {
-         DB::table($tableName)->insert(['patch_class' => $patchClass, 'ran_at' => now()]);
+         if ($existing) {
+            // Increment run_count
+            DB::table($tableName)->where('patch_class', $patchClass)->increment('run_count');
+         } else {
+            DB::table($tableName)->insert([
+               'patch_class' => $patchClass,
+               'ran_at' => now(),
+               'run_count' => 1,
+            ]);
+         }
+
          $this->info("Successfully ran and logged <info>{$patchClass}</info>.");
       } else {
          $this->error("Patch <info>{$patchClass}</info> failed to execute.");
@@ -51,6 +63,7 @@ abstract class PatchCommand extends Command
 
       return $status;
    }
+
 
    /**
     * The patch logic that must be implemented by child classes.

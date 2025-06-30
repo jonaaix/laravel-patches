@@ -1,8 +1,8 @@
 <?php
 namespace Aaix\LaravelPatches;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Aaix\LaravelPatches\Commands\MakePatchCommand;
 use Aaix\LaravelPatches\Commands\StatusCommand;
 
@@ -27,13 +27,6 @@ class PatchServiceProvider extends ServiceProvider
             ],
             'patches-config',
          );
-
-         $this->publishes(
-            [
-               __DIR__ . '/../database/migrations/' => database_path('migrations'),
-            ],
-            'patches-migrations',
-         );
       }
    }
 
@@ -55,17 +48,17 @@ class PatchServiceProvider extends ServiceProvider
       }
 
       $appNamespace = $this->app->getNamespace();
+      $path = ltrim(str_replace('app', '', $patchPath), '/');
+      $relativeNamespace = str_replace('/', '\\', Str::studly($path));
+      $namespace = rtrim($appNamespace, '\\') . '\\' . trim($relativeNamespace, '\\');
+
       $files = $this->app['files']->files($fullPath);
       $commands = [];
 
       foreach ($files as $file) {
          $className = pathinfo($file->getFilename(), PATHINFO_FILENAME);
 
-         // Build the full FQCN by converting each path segment to StudlyCase
-         $relative = ltrim(substr($patchPath, strlen('app')), '/\\');
-         $segments = collect(preg_split('/[\/\\\\]+/', $relative))->map(fn($seg) => Str::studly($seg))->filter()->implode('\\');
-
-         $fqcn = trim($appNamespace . $segments . '\\' . $className, '\\');
+         $fqcn = $namespace . '\\' . $className;
 
          if (class_exists($fqcn)) {
             $commands[] = $fqcn;

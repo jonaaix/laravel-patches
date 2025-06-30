@@ -4,8 +4,8 @@
 [![Latest Stable Version](https://img.shields.io/packagist/v/aaix/laravel-patches.svg)](https://packagist.org/packages/aaix/laravel-patches)
 [![Total Downloads](https://img.shields.io/packagist/dt/aaix/laravel-patches.svg)](https://packagist.org/packages/aaix/laravel-patches)
 
-
-A simple, command-based patching system for Laravel. Patches are designed to be hidden, trackable, and disposable one-off commands, ideal for data migrations, one-time fixes, or complex deployments.
+A simple, command-based patching system for Laravel. Patches are designed to be hidden, trackable, and disposable one-off
+commands, ideal for data migrations, one-time fixes, or complex deployments.
 
 ---
 
@@ -26,17 +26,9 @@ A simple, command-based patching system for Laravel. Patches are designed to be 
    composer require aaix/laravel-patches
    ```
 
-2. **📂 Publish Assets:**
+2. **📂 Configuration (Optional):**
 
-   This package provides a migration for the patch log table and an optional configuration file. You have full control over what to publish using standard Artisan commands.
-
-   *To publish the migration file:*
-
-   ```bash
-   php artisan vendor:publish --tag=patches-migrations
-   ```
-
-   *To optionally publish the configuration file for customization:*
+   If you want to customize the configuration, you can optionally publish the config file:
 
    ```bash
    php artisan vendor:publish --tag=patches-config
@@ -44,11 +36,14 @@ A simple, command-based patching system for Laravel. Patches are designed to be 
 
 3. **🛠️ Run the Migration:**
 
-   After publishing the migration, run it to create the `patch_logs` table in your database.
+   Simply run the migration command to create the patch_logs table:
 
    ```bash
    php artisan migrate
    ```
+
+If you update this package in the future and additional migrations are added, they will be automatically detected the next time
+you run php artisan migrate.
 
 ---
 
@@ -56,7 +51,8 @@ A simple, command-based patching system for Laravel. Patches are designed to be 
 
 ### 1️⃣ Create a Patch
 
-Use the provided `make:patch` command to create a new patch class. The file will be placed in the `app/Console/Patches` directory by default.
+Use the provided `make:patch` command to create a new patch class. The file will be placed in the `app/Console/Patches` directory
+by default.
 
 ```bash
 php artisan make:patch FixUserEmails

@@ -76,13 +76,14 @@ class PatchCommandsTest extends TestCase
       $this->artisan('patch:my-test-patch')->assertSuccessful();
       $this->assertCount(1, DB::table('patch_logs')->get());
 
-      // Act
+      // In a non-interactive test, confirm() returns false, so the patch is skipped.
       $this->artisan('patch:my-test-patch')
-         ->expectsOutputToContain('has already been applied and will be skipped')
+         ->expectsOutputToContain('Skipping patch')
          ->assertSuccessful();
 
-      // Assert
+      // Assert that the run_count was NOT incremented because we skipped.
       $this->assertCount(1, DB::table('patch_logs')->get());
+      $this->assertDatabaseHas('patch_logs', ['run_count' => 1]);
    }
 
    #[Test]

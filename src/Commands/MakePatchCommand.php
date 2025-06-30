@@ -2,12 +2,15 @@
 
 namespace Aaix\LaravelPatches\Commands;
 
+use Aaix\LaravelPatches\Concerns\ResolvesPatchNamespace;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 
 class MakePatchCommand extends Command
 {
+   use ResolvesPatchNamespace;
+
    protected $signature = 'make:patch {name : The name of the patch}';
    protected $description = 'Create a new hidden, command-based patch';
 
@@ -23,7 +26,7 @@ class MakePatchCommand extends Command
    {
       $name = Str::studly(trim($this->argument('name')));
       $date = now()->format('Y_m_d');
-      $className = "Patch_{$date}_{$name}";
+      $className = "Patch_{{$date}}_{$name}";
       $signature = "patch:{$date}_" . Str::kebab($name);
 
       $path = $this->getPatchPath($className);
@@ -37,7 +40,8 @@ class MakePatchCommand extends Command
 
       $stub = $this->getStub();
 
-      $namespace = $this->getNamespaceForPath();
+      $configPath = config('patches.path', 'app/Console/Patches');
+      $namespace = $this->getNamespaceForPath($configPath);
 
       $stub = str_replace(
          ['{{ namespace }}', '{{ class }}', '{{ signature }}', '{{ description }}'],
@@ -62,20 +66,6 @@ class MakePatchCommand extends Command
    {
       $path = config('patches.path', 'app/Console/Patches');
       return base_path("{$path}/{$className}.php");
-   }
-
-   protected function getNamespaceForPath(): string
-   {
-      // Get the application's root namespace (usually "App")
-      $appNamespace = $this->laravel->getNamespace();
-
-      // Get the configured path, relative to the base path
-      $path = config('patches.path', 'app/Console/Patches');
-
-      // Remove "app/" from the beginning of the path and convert to namespace
-      $relativeNamespace = str_replace('/', '\\', Str::studly(ltrim(str_replace('app', '', $path), '/')));
-
-      return rtrim($appNamespace, '\\') . '\\' . $relativeNamespace;
    }
 
    protected function makeDirectory(string $path): void
