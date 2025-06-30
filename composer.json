@@ -1,5 +1,5 @@
 {
-   "version": "1.0.5",
+   "version": "1.0.6",
    "name": "aaix/laravel-patches",
    "description": "A simple, command-based patching system for Laravel where patches are trackable.",
    "type": "laravel-package",
