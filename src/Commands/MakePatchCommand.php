@@ -26,7 +26,7 @@ class MakePatchCommand extends Command
    {
       $name = Str::studly(trim($this->argument('name')));
       $date = now()->format('Y_m_d');
-      $className = "Patch_{{$date}}_{$name}";
+      $className = 'Patch_' . $date . '_' . $name;
       $signature = "patch:{$date}_" . Str::kebab($name);
 
       $path = $this->getPatchPath($className);
@@ -40,7 +40,7 @@ class MakePatchCommand extends Command
 
       $stub = $this->getStub();
 
-      $configPath = config('patches.path', 'app/Console/Patches');
+      $configPath = config('patches.path', 'app/Console/Commands/Patches');
       $namespace = $this->getNamespaceForPath($configPath);
 
       $stub = str_replace(
@@ -64,7 +64,7 @@ class MakePatchCommand extends Command
 
    protected function getPatchPath(string $className): string
    {
-      $path = config('patches.path', 'app/Console/Patches');
+      $path = config('patches.path', 'app/Console/Commands/Patches');
       return base_path("{$path}/{$className}.php");
    }
 

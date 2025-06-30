@@ -8,58 +8,40 @@ use Illuminate\Support\Facades\File;
 
 abstract class TestCase extends OrchestraTestCase
 {
-   /**
-    * Setup the test environment.
-    */
    protected function setUp(): void
    {
       parent::setUp();
    }
 
-   /**
-    * Copies a fixture patch into the test application's command directory.
-    */
-   protected function setupTestPatch(): void
+   protected function setupTestPatches(): void
    {
-      $fixturePath = __DIR__ . '/fixtures/MyTestPatch.php';
-      $destinationPath = app_path('Console/Patches');
-      $destinationFile = $destinationPath . '/MyTestPatch.php';
-
+      $destinationPath = app_path('Console/Commands/Patches');
       if (!File::isDirectory($destinationPath)) {
          File::makeDirectory($destinationPath, 0755, true);
       }
 
-      File::copy($fixturePath, $destinationPath . '/MyTestPatch.php');
+      $fixtureFiles = [
+         'Patch_2025_01_01_MyTestPatch.php',
+         'Patch_2025_01_02_MySecondTestPatch.php',
+      ];
 
-      // Manually load the class file so PHP knows about it,
-      // bypassing the autoloader issue.
-      require_once $destinationFile;
+      foreach ($fixtureFiles as $fixtureFile) {
+         $fixturePath = __DIR__ . '/fixtures/' . $fixtureFile;
+         $destinationFile = $destinationPath . '/' . $fixtureFile;
+         File::copy($fixturePath, $destinationFile);
+         require_once $destinationFile;
+      }
    }
 
-   /**
-    * Get package providers.
-    *
-    * @param  \Illuminate\Foundation\Application $app
-    * @return array
-    */
    protected function getPackageProviders($app): array
    {
-      // We only return the provider class here. The setup happens elsewhere.
       return [PatchServiceProvider::class];
    }
 
-   /**
-    * Define environment setup.
-    *
-    * @param  \Illuminate\Foundation\Application  $app
-    * @return void
-    */
    protected function getEnvironmentSetUp($app): void
    {
-      // 1. Set up the test patch file now that core services are available.
-      $this->setupTestPatch();
+      $this->setupTestPatches();
 
-      // 2. Set up the in-memory SQLite database.
       $app['config']->set('database.default', 'testing');
       $app['config']->set('database.connections.testing', [
          'driver' => 'sqlite',
@@ -67,7 +49,6 @@ abstract class TestCase extends OrchestraTestCase
          'prefix' => '',
       ]);
 
-      // 3. Set the default patch path for our provider to find the test patch.
-      $app['config']->set('patches.path', 'app/Console/Patches');
+      $app['config']->set('patches.path', 'app/Console/Commands/Patches');
    }
 }

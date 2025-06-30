@@ -18,9 +18,8 @@ return [
    |--------------------------------------------------------------------------
    |
    | This is the path where your generated patch command files will be stored.
-   | By default, this is within the `app/Console` directory, which is
-   | already covered by Laravel's default PSR-4 autoloader.
+   | By default, this is within the `app/Console/Commands` directory.
    |
    */
-   'path' => 'app/Console/Patches',
+   'path' => 'app/Console/Commands/Patches',
 ];
