@@ -101,8 +101,8 @@ class PatchCommandsTest extends TestCase
    public function it_can_interactively_select_and_run_patches(): void
    {
       $expectedOptions = [
-         'Patch_2025_01_01_MyTestPatch' => 'Patch_2025_01_01_MyTestPatch',
-         'Patch_2025_01_02_MySecondTestPatch' => 'Patch_2025_01_02_MySecondTestPatch',
+         'Patch_2025_01_01_MyTestPatch',
+         'Patch_2025_01_02_MySecondTestPatch',
       ];
 
       $this->artisan('patch')

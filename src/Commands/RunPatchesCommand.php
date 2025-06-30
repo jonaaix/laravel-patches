@@ -32,7 +32,7 @@ class RunPatchesCommand extends Command
          return self::SUCCESS;
       }
 
-      $options = $pendingPatches->pluck('name', 'name')->all();
+      $options = $pendingPatches->pluck('name')->all();
 
       $selectedPatches = multiselect(
          label: 'Which (pending) patches would you like to run?',
