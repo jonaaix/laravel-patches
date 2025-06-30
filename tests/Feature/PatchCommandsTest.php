@@ -100,14 +100,16 @@ class PatchCommandsTest extends TestCase
    #[Test]
    public function it_can_interactively_select_and_run_patches(): void
    {
+      $expectedOptions = [
+         'Patch_2025_01_01_MyTestPatch' => 'Patch_2025_01_01_MyTestPatch',
+         'Patch_2025_01_02_MySecondTestPatch' => 'Patch_2025_01_02_MySecondTestPatch',
+      ];
+
       $this->artisan('patch')
          ->expectsChoice(
             'Which (pending) patches would you like to run?',
             ['Patch_2025_01_02_MySecondTestPatch'],
-            [
-               'Patch_2025_01_01_MyTestPatch',
-               'Patch_2025_01_02_MySecondTestPatch',
-            ]
+            $expectedOptions
          )
          ->expectsOutputToContain('Second test patch executed.')
          ->doesntExpectOutputToContain('Test patch executed.')
