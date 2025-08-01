@@ -51,7 +51,7 @@ class MakePatchCommand extends Command
 
       $this->files->put($path, $stub);
 
-      $this->info("Patch created successfully: <comment>{$className}</comment>");
+      $this->info("Patch created successfully: <comment>[" . $configPath . "/{$className}.php]</comment>");
       $this->line("You can now run it using: <info>php artisan {$signature}</info>");
 
       return self::SUCCESS;
