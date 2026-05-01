@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+   base: '/laravel-patches/',
    title: 'Laravel Patches',
    description:
       'A simple, command-based patching system for Laravel — hidden, trackable, and disposable one-off commands for data migrations, one-time fixes, and complex deployments.',
