@@ -1,7 +1,9 @@
 import { defineConfig } from 'vitepress'
 
+const base = '/laravel-patches/'
+
 export default defineConfig({
-   base: '/laravel-patches/',
+   base,
    title: 'Laravel Patches',
    description:
       'A simple, command-based patching system for Laravel — hidden, trackable, and disposable one-off commands for data migrations, one-time fixes, and complex deployments.',
@@ -10,7 +12,7 @@ export default defineConfig({
    lastUpdated: true,
 
    head: [
-      ['link', { rel: 'icon', type: 'image/webp', href: '/logo.webp' }],
+      ['link', { rel: 'icon', type: 'image/webp', href: `${base}logo.webp` }],
       ['meta', { name: 'theme-color', content: '#e84e2a' }],
    ],
 
