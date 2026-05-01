@@ -21,7 +21,7 @@ A simple, command-based patching system for Laravel — hidden, trackable, and d
 
 ## Features
 
-- **Command-Based** — every patch is a full-fledged Artisan command.
+- **Command-Based** — every patch is a full-fledged Artisan command. 
 - **Trackable** — executed patches are logged in a database table to prevent re-execution.
 - **Disposable** — delete the patch file when it's no longer needed.
 - **User-Controlled** — unlike migrations, patches never run automatically. You decide which patch runs and when.
