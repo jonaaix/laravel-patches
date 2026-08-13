@@ -11,11 +11,26 @@ use Symfony\Component\Console\Output\OutputInterface;
 abstract class PatchCommand extends Command
 {
    /**
+    * Whether a successful run should be recorded in the patch log table.
+    * Set to false via {@see skipLog()} when the run should not be persisted
+    * (e.g. dry-run, no-op, or any other reason the patch shouldn't count).
+    */
+   protected bool $shouldLog = true;
+
+   /**
     * Hide the command from the artisan list.
     */
    public function isHidden(): bool
    {
       return true;
+   }
+
+   /**
+    * Mark this run so it will not be recorded in the patch log table.
+    */
+   protected function skipLog(): void
+   {
+      $this->shouldLog = false;
    }
 
    /**
@@ -45,18 +60,22 @@ abstract class PatchCommand extends Command
       $status = parent::execute($input, $output);
 
       if ($status === self::SUCCESS) {
-         if ($existing) {
-            // Increment run_count
-            DB::table($tableName)->where('patch_class', $patchClass)->increment('run_count');
-         } else {
-            DB::table($tableName)->insert([
-               'patch_class' => $patchClass,
-               'ran_at' => now(),
-               'run_count' => 1,
-            ]);
-         }
+         if ($this->shouldLog) {
+            if ($existing) {
+               // Increment run_count
+               DB::table($tableName)->where('patch_class', $patchClass)->increment('run_count');
+            } else {
+               DB::table($tableName)->insert([
+                  'patch_class' => $patchClass,
+                  'ran_at' => now(),
+                  'run_count' => 1,
+               ]);
+            }
 
-         $this->info("Successfully ran and logged <info>{$patchClass}</info>.");
+            $this->info("Successfully ran and logged <info>{$patchClass}</info>.");
+         } else {
+            $this->info("Successfully ran <info>{$patchClass}</info> (not logged).");
+         }
       } else {
          $this->error("Patch <info>{$patchClass}</info> failed to execute.");
       }
