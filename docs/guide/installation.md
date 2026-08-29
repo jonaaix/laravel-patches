@@ -2,8 +2,13 @@
 
 ## Requirements
 
-- A working Laravel application.
+- Laravel 12 or 13.
+- PHP 8.2 or higher.
 - Composer.
+
+::: info
+Support for Laravel 10 and 11 was dropped in 1.1.0 — both are past their security-fix window. Stay on 1.0.x if you need them.
+:::
 
 ## 1. Require the package
 

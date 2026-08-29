@@ -15,23 +15,17 @@ jobs:
                 # We explicitly define the test combinations.
                 # Each combination has a compatible set of Laravel, Testbench, and PHPUnit versions.
                 include:
-                    # Test Laravel 10
-                    -   laravel: 10.*
-                        php: 8.2
-                        testbench: 8.*
-                        phpunit: 10.*
-
-                    # Test Laravel 11
-                    -   laravel: 11.*
-                        php: 8.2
-                        testbench: 9.*
-                        phpunit: 11.*
-
-                    # Test Laravel 12
+                    # Test Laravel 12 on the lowest supported PHP version
                     -   laravel: 12.*
-                        php: 8.3
+                        php: 8.2
                         testbench: 10.*
                         phpunit: 12.*
+
+                    # Test Laravel 13
+                    -   laravel: 13.*
+                        php: 8.4
+                        testbench: 11.*
+                        phpunit: 13.*
 
         name: P${{ matrix.php }} - L${{ matrix.laravel }}
 
