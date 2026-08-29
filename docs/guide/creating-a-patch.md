@@ -16,6 +16,16 @@ app/Console/Commands/Patches/Patch_2025_06_30_FixUserEmails.php
 
 The date prefix and signature are generated automatically so patches stay sortable and uniquely identifiable.
 
+## Describe the patch
+
+The generated file carries a placeholder description. Replace it with what the patch actually repairs:
+
+```php
+protected $description = 'Strip whitespace from imported user emails';
+```
+
+It is shown next to the file name in the interactive `patch` picker and in `patch:status`, where the class name alone rarely says enough.
+
 ## Implement the patch logic
 
 Open the new file and add your logic to the `handle()` method:

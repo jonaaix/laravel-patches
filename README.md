@@ -7,7 +7,7 @@
 <h1 align="center">Laravel Patches</h1>
 
 <p align="center">
-A simple, command-based patching system for Laravel — hidden, trackable, and disposable one-off commands for data migrations, one-time fixes, and complex deployments.
+A simple, command-based patching system for Laravel — hidden, trackable commands that repair or clean up data at a specific point in your project's history.
 </p>
 
 <p align="center">

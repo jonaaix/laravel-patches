@@ -14,9 +14,11 @@ You'll see a prompt like:
 
 ```
 ? Which (pending) patches would you like to run?
-  [ ] Patch_2025_06_30_FixUserEmails.php
-  [ ] Patch_2025_07_01_AnotherFix.php
+  [ ] Patch_2025_06_30_FixUserEmails  —  Strip whitespace from imported user emails
+  [ ] Patch_2025_07_01_AnotherFix  —  Reset order totals corrupted by the rounding bug
 ```
+
+Each entry shows the patch's `$description`, so keep it meaningful — the class name alone rarely says what a patch does.
 
 ## B) Run a specific patch by signature
 

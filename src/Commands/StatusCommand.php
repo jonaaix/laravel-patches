@@ -50,6 +50,9 @@ class StatusCommand extends Command
          $this->line('  <fg=gray>None</>');
          return;
       }
-      $this->table(['Patch Name'], $patches->map(fn($patch) => ['Patch' => $patch['name']]));
+      $this->table(
+         ['Patch Name', 'Description'],
+         $patches->map(fn($patch) => [$patch['name'], $patch['description']]),
+      );
    }
 }

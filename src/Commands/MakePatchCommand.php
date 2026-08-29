@@ -45,7 +45,7 @@ class MakePatchCommand extends Command
 
       $stub = str_replace(
          ['{{ namespace }}', '{{ class }}', '{{ signature }}', '{{ description }}'],
-         [$namespace, $className, $signature, "Patch for {$name}"],
+         [$namespace, $className, $signature, 'TODO: describe what this patch fixes'],
          $stub,
       );
 
