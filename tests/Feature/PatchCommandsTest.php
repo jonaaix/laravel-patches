@@ -31,6 +31,10 @@ class PatchCommandsTest extends TestCase
       $this->artisan('make:patch', ['name' => $patchName])
          ->expectsOutputToContain('Patch created successfully')
          ->assertSuccessful();
+
+      $path = app_path('Console/Commands/Patches/Patch_' . now()->format('Y_m_d') . "_{$patchName}.php");
+
+      $this->assertStringContainsString("protected \$description = 'TODO: describe what this patch fixes';", File::get($path));
    }
 
    #[Test]
@@ -40,6 +44,15 @@ class PatchCommandsTest extends TestCase
          ->expectsOutputToContain('❌ Pending Patches')
          ->expectsOutputToContain('Patch_2025_01_01_MyTestPatch')
          ->expectsOutputToContain('Patch_2025_01_02_MySecondTestPatch')
+         ->assertSuccessful();
+   }
+
+   #[Test]
+   public function status_command_shows_patch_descriptions(): void
+   {
+      $this->artisan('patch:status')
+         ->expectsOutputToContain('A test patch for automated testing.')
+         ->expectsOutputToContain('A second test patch for automated testing.')
          ->assertSuccessful();
    }
 
@@ -89,7 +102,10 @@ class PatchCommandsTest extends TestCase
          ->expectsChoice(
             'Which (pending) patches would you like to run?',
             ['Patch_2025_01_02_MySecondTestPatch'],
-            ['Patch_2025_01_01_MyTestPatch', 'Patch_2025_01_02_MySecondTestPatch']
+            [
+               'Patch_2025_01_01_MyTestPatch' => 'Patch_2025_01_01_MyTestPatch  —  A test patch for automated testing.',
+               'Patch_2025_01_02_MySecondTestPatch' => 'Patch_2025_01_02_MySecondTestPatch  —  A second test patch for automated testing.',
+            ]
          )
          ->expectsOutputToContain('Second test patch executed.')
          ->doesntExpectOutputToContain('Test patch executed.')

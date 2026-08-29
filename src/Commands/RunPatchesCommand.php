@@ -53,7 +53,13 @@ class RunPatchesCommand extends Command
          return self::SUCCESS;
       }
 
-      $options = $pendingPatches->pluck('name')->all();
+      $options = $pendingPatches
+         ->mapWithKeys(fn($patch) => [
+            $patch['name'] => $patch['description'] !== ''
+               ? "{$patch['name']}  —  {$patch['description']}"
+               : $patch['name'],
+         ])
+         ->all();
 
       $selectedPatchNames = multiselect(
          label: 'Which (pending) patches would you like to run?',

@@ -29,8 +29,22 @@ trait InteractsWithPatches
 
       return collect($phpFiles)->map(function ($file) use ($namespace, $filesystem) {
          $className = $namespace . '\\' . $filesystem->name($file);
-         return ['class' => $className, 'name' => $filesystem->name($file)];
+
+         return [
+            'class' => $className,
+            'name' => $filesystem->name($file),
+            'description' => $this->getPatchDescription($className),
+         ];
       });
+   }
+
+   protected function getPatchDescription(string $className): string
+   {
+      if (!class_exists($className)) {
+         return '';
+      }
+
+      return (string) app($className)->getDescription();
    }
 
    protected function getPendingPatches(): Collection
