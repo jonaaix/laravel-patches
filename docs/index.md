@@ -3,8 +3,8 @@ layout: home
 
 hero:
    name: Laravel Patches
-   text: Trackable one-off commands for Laravel.
-   tagline: A simple, command-based patching system — hidden, trackable, and disposable patches for data migrations, one-time fixes, and complex deployments.
+   text: Trackable data patches for Laravel.
+   tagline: A simple, command-based patching system — hidden, trackable commands that repair or clean up data at a specific point in your project's history.
    image:
       src: /logo.webp
       alt: Laravel Patches logo
